@@ -1,0 +1,12 @@
+{
+  "name": "tudien/tudien",
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "require": {
+    "doctrine/orm": "^2.5",
+    "symfony/console": "^3.0",
+    "silex/silex": "dev-master",
+    "monolog/monolog": "^1.17",
+    "dflydev/doctrine-orm-service-provider": "^2.0"
+  }
+}
