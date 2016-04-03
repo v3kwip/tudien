@@ -1,0 +1,17 @@
+{
+  "name": "andytruong/dict",
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "andytruong\\dict\\": "./"
+    }
+  },
+  "require": {
+    "doctrine/dbal": "^2.5.0",
+    "doctrine/migrations": "^1.3",
+    "fabpot/goutte": "^3.1",
+    "go1/app": "^0.5",
+    "silex/silex": "~2.0@dev"
+  }
+}

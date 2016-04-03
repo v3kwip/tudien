@@ -1,0 +1,4 @@
+name: Dictionary
+migrations_namespace: andytruong\dict\migrations
+table_name: dict_migration
+migrations_directory: migrations
