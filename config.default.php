@@ -5,8 +5,9 @@ use andytruong\dict\commands\Worker;
 use andytruong\dict\domain\source\SourceRepository;
 use andytruong\dict\domain\topic\TopicFetchCommand;
 use andytruong\dict\domain\topic\TopicRepository;
-use andytruong\dict\domain\word\WordFetchCommand;
+use andytruong\dict\domain\word\WordFetch;
 use andytruong\dict\domain\word\WordRepository;
+use andytruong\dict\domain\word\WordWarmCommand;
 use andytruong\queue\Queue;
 use go1\edge\Edge;
 use Monolog\Handler\ErrorLogHandler;
@@ -36,6 +37,7 @@ return call_user_func(function () {
             $console = new Console(App::NAME, App::VERSION);
             $console->add($c['topic.cmd.fetch']);
             $console->add($c['worker']);
+            $console->add($c['word.cmd.warm']);
 
             return $console;
         },
@@ -60,6 +62,7 @@ return call_user_func(function () {
         'topic.cmd.fetch'   => function (App $c) { return new TopicFetchCommand($c['queue']); },
         'source.repository' => function (App $c) { return new SourceRepository($c['dbs']['default'], $c['edge']); },
         'word.repository'   => function (App $c) { return new WordRepository($c['dbs']['default'], $c['edge'], $c['topic.repository'], $c['source.repository']); },
-        'word.fetch'        => function (App $c) { return new WordFetchCommand($c['topic.repository'], $c['word.repository'], $c['source.repository']); },
+        'word.fetch'        => function (App $c) { return new WordFetch($c['topic.repository'], $c['word.repository'], $c['source.repository']); },
+        'word.cmd.warm'     => function (App $c) { return new WordWarmCommand($c['dbs']['default'], $c['queue']); },
     ];
 });

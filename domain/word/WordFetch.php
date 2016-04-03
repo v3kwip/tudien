@@ -6,7 +6,7 @@ use andytruong\dict\App;
 use andytruong\dict\domain\source\SourceRepository;
 use andytruong\dict\domain\topic\TopicRepository;
 
-class WordFetchCommand
+class WordFetch
 {
     private $topicRepository;
     private $wordRepository;
