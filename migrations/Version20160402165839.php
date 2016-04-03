@@ -26,13 +26,13 @@ class Version20160402165839 extends AbstractMigration
         $topic->addIndex(['title'], 'index_title');
         $topic->setPrimaryKey(['id']);
 
-        $word = $schema->createTable('dict_source');
+        $word = $schema->createTable('dict_word');
         $word->addColumn('id', 'integer', ['unsigned' => true, 'autoincrement' => true]);
         $word->addColumn('title', 'string');
         $word->addColumn('description', 'text');
         $word->setPrimaryKey(['id']);
 
-        $web = $schema->createTable('dict_web');
+        $web = $schema->createTable('dict_source');
         $web->addColumn('id', 'integer', ['unsigned' => true, 'autoincrement' => true]);
         $web->addColumn('url', 'string');
         $web->setPrimaryKey(['id']);
