@@ -3,6 +3,7 @@
 use andytruong\dict\App;
 use andytruong\dict\command\Worker;
 use andytruong\dict\controller\StudyController;
+use andytruong\dict\controller\topic\TopicIndexController;
 use andytruong\dict\controller\WordController;
 use andytruong\dict\domain\source\SourceRepository;
 use andytruong\dict\domain\topic\TopicFetchCommand;
@@ -69,7 +70,8 @@ return call_user_func(function () {
 
         # Controller
         # ---------------------
-        'ctrl.word'  => function (App $c) { return new WordController($c['dbs']['default'], $c['word.repository'], $c['topic.repository']); },
-        'ctrl.study' => function (App $c) { return new StudyController($c['edge'], $c['word.repository']); }
+        'ctrl.topic.index' => function (App $c) { return new TopicIndexController($c['dbs']['default'], $c['topic.repository'], $c['edge']); },
+        'ctrl.word'        => function (App $c) { return new WordController($c['dbs']['default'], $c['word.repository'], $c['topic.repository']); },
+        'ctrl.study'       => function (App $c) { return new StudyController($c['edge'], $c['word.repository']); }
     ];
 });
