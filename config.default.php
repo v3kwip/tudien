@@ -69,7 +69,7 @@ return call_user_func(function () {
 
         # Controller
         # ---------------------
-        'ctrl.word'  => function (App $c) { return new WordController($c['dbs']['default']); },
-        'ctrl.study' => function (App $c) { return new StudyController($c['edge']); }
+        'ctrl.word'  => function (App $c) { return new WordController($c['dbs']['default'], $c['word.repository'], $c['topic.repository']); },
+        'ctrl.study' => function (App $c) { return new StudyController($c['edge'], $c['word.repository']); }
     ];
 });

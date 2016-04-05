@@ -41,4 +41,24 @@ class TopicRepository
 
         return $this->edge->link($sourceId, $targetId, 0, App::HAS_CHILD_TOPIC);
     }
+
+    /**
+     * @param int|int[] $ids
+     * @return int[]
+     */
+    public function getLeafTopicId($ids)
+    {
+        $ids = is_scalar($ids) ? [$ids] : $ids;
+        $subTopicIDs = $this->edge->getTargetIds($ids, App::HAS_CHILD_TOPIC);
+        if ($subTopicIDs) {
+            $subIds = [];
+            foreach ($subTopicIDs as $subTopicID) {
+                $subIds = array_merge($subIds, $subTopicID);
+            }
+
+            return $this->getLeafTopicId($subIds);
+        }
+
+        return $ids;
+    }
 }

@@ -19,9 +19,9 @@ class App extends GO1
         parent::__construct($values);
 
         $this->get('/word/{word}', 'ctrl.word:get');
+        $this->get('/word/random/{topic}', 'ctrl.word:getRandom')->value('topic', null);
 
         // @TODO
-        $this->get('/word/random/{topic}', 'ctrl.word:random')->value('topic', null);
         $this->get('/study/know/{topic}', 'ctrl.study:index')->value('topic', null);
         $this->post('/edge/{word}/{type}', 'ctrl.study:createEdge')->value('type', static::EDGE_KNOW_WORD);
     }
