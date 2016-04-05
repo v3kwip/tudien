@@ -7,6 +7,7 @@ use andytruong\dict\domain\source\SourceRepository;
 use andytruong\dict\domain\topic\TopicRepository;
 use Doctrine\DBAL\Connection;
 use go1\edge\Edge;
+use PDO;
 
 class WordRepository
 {
@@ -33,6 +34,16 @@ class WordRepository
             ->connection
             ->executeQuery("SELECT id FROM dict_word WHERE title = ?", [$title])
             ->fetchColumn();
+    }
+
+    public function get($id)
+    {
+        $word = $this
+            ->connection
+            ->executeQuery('SELECT * FROM dict_word WHERE id = ?', [$id])
+            ->fetch(PDO::FETCH_OBJ);
+
+        return $word;
     }
 
     public function create($title)

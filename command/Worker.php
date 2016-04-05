@@ -1,6 +1,6 @@
 <?php
 
-namespace andytruong\dict\commands;
+namespace andytruong\dict\command;
 
 use andytruong\dict\App;
 use andytruong\queue\Exception;

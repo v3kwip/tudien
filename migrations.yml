@@ -1,4 +1,4 @@
 name: Dictionary
-migrations_namespace: andytruong\dict\migrations
+migrations_namespace: andytruong\dict\migration
 table_name: dict_migration
-migrations_directory: migrations
+migrations_directory: migration

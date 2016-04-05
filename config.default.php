@@ -1,7 +1,9 @@
 <?php
 
 use andytruong\dict\App;
-use andytruong\dict\commands\Worker;
+use andytruong\dict\command\Worker;
+use andytruong\dict\controller\StudyController;
+use andytruong\dict\controller\WordController;
 use andytruong\dict\domain\source\SourceRepository;
 use andytruong\dict\domain\topic\TopicFetchCommand;
 use andytruong\dict\domain\topic\TopicRepository;
@@ -64,5 +66,10 @@ return call_user_func(function () {
         'word.repository'   => function (App $c) { return new WordRepository($c['dbs']['default'], $c['edge'], $c['topic.repository'], $c['source.repository']); },
         'word.fetch'        => function (App $c) { return new WordFetch($c['topic.repository'], $c['word.repository'], $c['source.repository']); },
         'word.cmd.warm'     => function (App $c) { return new WordWarmCommand($c['dbs']['default'], $c['queue']); },
+
+        # Controller
+        # ---------------------
+        'ctrl.word'  => function (App $c) { return new WordController($c['dbs']['default']); },
+        'ctrl.study' => function (App $c) { return new StudyController($c['edge']); }
     ];
 });

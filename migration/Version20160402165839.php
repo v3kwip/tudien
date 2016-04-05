@@ -1,6 +1,6 @@
 <?php
 
-namespace andytruong\dict\migrations;
+namespace andytruong\dict\migration;
 
 use andytruong\queue\Queue;
 use Doctrine\DBAL\Migrations\AbstractMigration;
