@@ -15,6 +15,6 @@
     "monolog/monolog": "^1.18",
     "go1/app": "^0.5",
     "silex/silex": "~2.0@dev",
-    "go1/edge": "^0.2"
+    "go1/edge": "^0.3"
   }
 }
