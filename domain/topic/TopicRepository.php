@@ -25,6 +25,14 @@ class TopicRepository
             ->fetchColumn();
     }
 
+    public function get($id)
+    {
+        return $this
+            ->connection
+            ->executeQuery("SELECT * FROM dict_topic WHERE id = ?", [$id])
+            ->fetch(\PDO::FETCH_OBJ);
+    }
+
     public function create($title)
     {
         $this
