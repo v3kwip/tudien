@@ -3,6 +3,7 @@
 namespace andytruong\dict\domain\word;
 
 use andytruong\dict\App;
+use andytruong\dict\domain\idiom\IdiomRepository;
 use andytruong\dict\domain\source\SourceRepository;
 use andytruong\dict\domain\topic\TopicRepository;
 use Doctrine\DBAL\Connection;
@@ -44,6 +45,27 @@ class WordRepository
             ->fetch(PDO::FETCH_OBJ);
 
         return $word;
+    }
+
+    public function save($title, array $options, IdiomRepository $idioRepository)
+    {
+        $id = $this->getId($title) ?: $this->create($title);
+        $data = [];
+
+        foreach ($options as $key => $value) {
+            switch ($key) {
+                case 'type':
+                case 'data':
+                    $data[$key] = $value;
+                    break;
+
+                case 'idioms':
+                    $data['data']['idiom'] = $value;
+                    break;
+            }
+        }
+
+        return $this->connection->update('dict_word', $data, ['id' => $id]) ? true : false;
     }
 
     public function create($title)
