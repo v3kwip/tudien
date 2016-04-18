@@ -4,6 +4,7 @@ namespace andytruong\dict\controller;
 
 use andytruong\dict\domain\word\WordRepository;
 use go1\edge\Edge;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class StudyController
 {
@@ -21,5 +22,7 @@ class StudyController
         $userId = 1;
         $wordId = $this->wordRepository->getId($word);
         $this->edge->link($userId, $wordId, 0, $type);
+
+        return new JsonResponse([], 200);
     }
 }
