@@ -6,6 +6,7 @@ use andytruong\dict\controller\StudyController;
 use andytruong\dict\controller\topic\TopicDetailsController;
 use andytruong\dict\controller\topic\TopicIndexController;
 use andytruong\dict\controller\WordController;
+use andytruong\dict\domain\Parser;
 use andytruong\dict\domain\source\SourceRepository;
 use andytruong\dict\domain\topic\TopicFetchCommand;
 use andytruong\dict\domain\topic\TopicRepository;
@@ -14,6 +15,7 @@ use andytruong\dict\domain\word\WordRepository;
 use andytruong\dict\domain\word\WordWarmCommand;
 use andytruong\queue\Queue;
 use go1\edge\Edge;
+use go1\edge\EdgeEvent;
 use Monolog\Handler\ErrorLogHandler;
 use Monolog\Logger;
 use Symfony\Component\Console\Application as Console;
@@ -67,13 +69,29 @@ return call_user_func(function () {
         'source.repository' => function (App $c) { return new SourceRepository($c['dbs']['default'], $c['edge']); },
         'word.repository'   => function (App $c) { return new WordRepository($c['dbs']['default'], $c['edge'], $c['topic.repository'], $c['source.repository']); },
         'word.fetch'        => function (App $c) { return new WordFetch($c['topic.repository'], $c['word.repository'], $c['source.repository']); },
-        'word.cmd.warm'     => function (App $c) { return new WordWarmCommand($c['dbs']['default'], $c['queue']); },
+        'word.cmd.warm'     => function (App $c) { return new WordWarmCommand($c['dbs']['default'], $c['queue'], new Parser(), $c['word.repository']); },
 
         # Controller
         # ---------------------
         'ctrl.topic.index'   => function (App $c) { return new TopicIndexController($c['dbs']['default'], $c['topic.repository'], $c['edge']); },
         'ctrl.topic.details' => function (App $c) { return new TopicDetailsController($c['dbs']['default'], $c['topic.repository'], $c['edge']); },
         'ctrl.word'          => function (App $c) { return new WordController($c['dbs']['default'], $c['word.repository'], $c['topic.repository']); },
-        'ctrl.study'         => function (App $c) { return new StudyController($c['edge'], $c['word.repository']); }
+        'ctrl.study'         => function (App $c) { return new StudyController($c['edge'], $c['word.repository']); },
+
+        # Events
+        # ---------------------
+        'events' => [
+            Edge::EVENT_LINK_DUPLICATE => function (EdgeEvent $event) {
+                $link = $event->getSubject();
+                $weight = $link['weight'];
+
+                switch ($link['type']) {
+                    case App::EDGE_VISIT_TOPIC:
+                    case App::EDGE_VISIT_WORD:
+                        $event->setArgument('weight', 1 + $weight);
+                        break;
+                }
+            },
+        ],
     ];
 });

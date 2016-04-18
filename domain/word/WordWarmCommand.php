@@ -2,7 +2,7 @@
 
 namespace andytruong\dict\domain\word;
 
-use andytruong\dict\App;
+use andytruong\dict\domain\Parser;
 use andytruong\queue\Queue;
 use Doctrine\DBAL\Connection;
 use Goutte\Client;
@@ -15,11 +15,15 @@ class WordWarmCommand extends Command
 {
     private $connection;
     private $queue;
+    private $parser;
+    private $repository;
 
-    public function __construct(Connection $connection, Queue $queue)
+    public function __construct(Connection $connection, Queue $queue, Parser $parser, WordRepository $repository)
     {
         $this->connection = $connection;
         $this->queue = $queue;
+        $this->parser = $parser;
+        $this->repository = $repository;
 
         parent::__construct();
     }
@@ -28,17 +32,31 @@ class WordWarmCommand extends Command
     {
         $this
             ->setName('word:warm')
-            ->addArgument('title', InputArgument::OPTIONAL)
-            ->addArgument('url', InputArgument::OPTIONAL);
+            ->setDescription('Recrawl a word.')
+            ->addArgument('title', InputArgument::OPTIONAL);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $title = $input->getArgument('title');
-        $url = $input->getArgument('url');
 
-        if ($title && $url) {
-            return $this->warm($title, $url);
+        if ($title) {
+            $client = new Client();
+            $url = 'http://www.oxfordlearnersdictionaries.com/definition/english/' . $title;
+            $rules = Parser::fixRules(require __DIR__ . '/import/oxfordlearnersdictionaries.com.php');
+
+            // Response for "love" unserialize.com/s/613d5830-bb73-a288-32eb-000044f04a89
+            $response = $this->parser->parse($client->request('GET', $url), $rules);
+
+            $this->repository->save($title, [
+                'type'   => $response['type'],
+                'idioms' => $response['idioms'],
+                'data'   => [
+                    'pronounces' => $response['pronounces'],
+                    'means'      => $response['means'],
+                    'related'    => $response['related'],
+                ],
+            ]);
         }
 
         $query = $this
@@ -48,27 +66,11 @@ class WordWarmCommand extends Command
                 . ' FROM dict_word w'
                 . ' INNER JOIN dict_edge e ON w.id = e.source_id AND e.type = ?'
                 . ' INNER JOIN dict_source s ON e.target_id = s.id',
-                [App::HAS_SOURCE]
+                [Word::HAS_SOURCE]
             );
 
         while ($row = $query->fetch(\PDO::FETCH_OBJ)) {
             $this->queue->create('word.cmd.warm:warm', [$row->title, $row->url]);
         }
-    }
-
-    public function warm($title, $url)
-    {
-        $url = 'http://www.oxfordlearnersdictionaries.com/definition/english/' . $title;
-        $client = new Client();
-        $content = $client->request('GET', $url)->filter('#entryContent')->first();
-
-        print_r([
-            'top'   => $content->filter('.top-container')->html(),
-            'entry' => $content->filter('span.def')
-                               ->parents()->first()
-                               ->parents()->first()
-                               ->html(),
-            // 'full' => $content->html(),
-        ]);
     }
 }
