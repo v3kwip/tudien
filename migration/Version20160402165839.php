@@ -2,6 +2,8 @@
 
 namespace andytruong\dict\migration;
 
+use andytruong\dict\domain\topic\Topic;
+use andytruong\dict\domain\word\Word;
 use andytruong\queue\Queue;
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
@@ -20,22 +22,18 @@ class Version20160402165839 extends AbstractMigration
         Edge::migrate($schema, 'dict_edge');
         Queue::migrate($schema, 'dict_queue');
 
-        $topic = $schema->createTable('dict_topic');
-        $topic->addColumn('id', 'integer', ['unsigned' => true, 'autoincrement' => true]);
-        $topic->addColumn('title', 'string');
-        $topic->addIndex(['title'], 'index_title');
-        $topic->setPrimaryKey(['id']);
-
-        $word = $schema->createTable('dict_word');
-        $word->addColumn('id', 'integer', ['unsigned' => true, 'autoincrement' => true]);
-        $word->addColumn('title', 'string');
-        $word->addColumn('description', 'text');
-        $word->setPrimaryKey(['id']);
+        Topic::install($schema);
+        Word::install($schema);
 
         $web = $schema->createTable('dict_source');
         $web->addColumn('id', 'integer', ['unsigned' => true, 'autoincrement' => true]);
         $web->addColumn('url', 'string');
         $web->setPrimaryKey(['id']);
+
+        $idiom = $schema->createTable('dict_idiom');
+        $idiom->addColumn('id', 'integer', ['unsign' => true, 'autoincrement' => true]);
+        $idiom->addColumn('description', 'text');
+        $idiom->setPrimaryKey(['id']);
     }
 
     /**
