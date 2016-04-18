@@ -51,14 +51,14 @@ class TopicDetailsController
                     [Connection::PARAM_INT_ARRAY]
                 )
                 ->fetchAll(PDO::FETCH_OBJ);
-
-            return new JsonResponse(
-                [
-                    'rootId'   => $this->topicRepository->get($rootId),
-                    'parentId' => $this->topicRepository->get($parentTopicId),
-                    'words'    => $words,
-                ]
-            );
         }
+
+        return new JsonResponse(
+            [
+                'rootId'   => !empty($rootId) ? $this->topicRepository->get($rootId) : null,
+                'parentId' => $this->topicRepository->get($parentTopicId),
+                'words'    => !empty($words) ? $words : [],
+            ]
+        );
     }
 }
