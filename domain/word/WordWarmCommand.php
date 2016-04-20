@@ -18,7 +18,11 @@ class WordWarmCommand extends Command
     private $parser;
     private $repository;
 
-    public function __construct(Connection $connection, Queue $queue, Parser $parser, WordRepository $repository)
+    public function __construct(
+        Connection $connection,
+        Queue $queue,
+        Parser $parser,
+        WordRepository $repository)
     {
         $this->connection = $connection;
         $this->queue = $queue;
@@ -31,32 +35,15 @@ class WordWarmCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('word:warm')
+            ->setName('word:crawl')
             ->setDescription('Recrawl a word.')
             ->addArgument('title', InputArgument::OPTIONAL);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $title = $input->getArgument('title');
-
-        if ($title) {
-            $client = new Client();
-            $url = 'http://www.oxfordlearnersdictionaries.com/definition/english/' . $title;
-            $rules = Parser::fixRules(require __DIR__ . '/import/oxfordlearnersdictionaries.com.php');
-
-            // Response for "love" unserialize.com/s/613d5830-bb73-a288-32eb-000044f04a89
-            $response = $this->parser->parse($client->request('GET', $url), $rules);
-
-            $this->repository->save($title, [
-                'type'   => $response['type'],
-                'idioms' => $response['idioms'],
-                'data'   => [
-                    'pronounces' => $response['pronounces'],
-                    'means'      => $response['means'],
-                    'related'    => $response['related'],
-                ],
-            ]);
+        if ($title = $input->getArgument('title')) {
+            return $this->warm($title);
         }
 
         $query = $this
@@ -72,5 +59,28 @@ class WordWarmCommand extends Command
         while ($row = $query->fetch(\PDO::FETCH_OBJ)) {
             $this->queue->create('word.cmd.warm:warm', [$row->title, $row->url]);
         }
+    }
+
+    public function warm($title, $url = null)
+    {
+        $client = new Client();
+        $url = $url ?: 'http://www.oxfordlearnersdictionaries.com/definition/english/' . $title;
+        $rules = Parser::fixRules(require __DIR__ . '/import/oxfordlearnersdictionaries.com.php');
+
+        // Example unserialize.com/s/52728c47-acc0-4228-db6c-000033b12e00
+        $response = $this->parser->parse($client->request('GET', $url), $rules);
+        
+        $this->repository->save(
+            $title,
+            [
+                'type'   => $response['type'],
+                'idioms' => $response['idioms'],
+                'data'   => [
+                    'pronounces' => $response['pronounces'],
+                    'means'      => $response['means'],
+                    'related'    => $response['related'],
+                ],
+            ]
+        );
     }
 }

@@ -2,8 +2,8 @@
 
 namespace andytruong\dict\domain\word;
 
-use andytruong\dict\App;
 use andytruong\dict\domain\source\SourceRepository;
+use andytruong\dict\domain\topic\Topic;
 use andytruong\dict\domain\topic\TopicRepository;
 
 class WordFetch
@@ -30,10 +30,10 @@ class WordFetch
             ->registerTopic($topic)
             ->registerWord($word)
             ->registerSource($url)
-            ->link(App::HAS_CHILD_TOPIC, $root, $category)
-            ->link(App::HAS_CHILD_TOPIC, $category, $topic)
-            ->link(App::HAS_TOPIC, $word, $topic)
-            ->link(App::HAS_SOURCE, $word, $url);
+            ->link(Topic::HAS_CHILD, $root, $category)
+            ->link(Topic::HAS_CHILD, $category, $topic)
+            ->link(Word::HAS_TOPIC, $word, $topic)
+            ->link(Word::HAS_SOURCE, $word, $url);
     }
 
     private function registerWord($title)
@@ -66,15 +66,15 @@ class WordFetch
     private function link($type, $source, $target)
     {
         switch ($type) {
-            case App::HAS_CHILD_TOPIC:
+            case Topic::HAS_CHILD:
                 $this->topicRepository->linkSubTopic($source, $target);
                 break;
 
-            case App::HAS_TOPIC:
+            case Word::HAS_TOPIC:
                 $this->wordRepository->linkTopic($source, $target);
                 break;
 
-            case App::HAS_SOURCE:
+            case Word::HAS_SOURCE:
                 $this->wordRepository->linkSource($source, $target);
                 break;
         }

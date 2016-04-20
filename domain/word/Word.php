@@ -18,6 +18,7 @@ class Word
     {
         $table = $schema->createTable('dict_word');
         $table->addColumn('id', 'integer', ['unsigned' => true, 'autoincrement' => true]);
+        $table->addColumn('type', 'text');
         $table->addColumn('title', 'string');
         $table->addColumn('data', 'blob');
         $table->setPrimaryKey(['id']);

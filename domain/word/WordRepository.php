@@ -2,8 +2,6 @@
 
 namespace andytruong\dict\domain\word;
 
-use andytruong\dict\App;
-use andytruong\dict\domain\idiom\IdiomRepository;
 use andytruong\dict\domain\source\SourceRepository;
 use andytruong\dict\domain\topic\TopicRepository;
 use Doctrine\DBAL\Connection;
@@ -47,7 +45,7 @@ class WordRepository
         return $word;
     }
 
-    public function save($title, array $options, IdiomRepository $idioRepository)
+    public function save($title, array $options)
     {
         $id = $this->getId($title) ?: $this->create($title);
         $data = [];
@@ -64,6 +62,8 @@ class WordRepository
                     break;
             }
         }
+
+        $data['data'] = json_encode($data['data']);
 
         return $this->connection->update('dict_word', $data, ['id' => $id]) ? true : false;
     }
@@ -82,7 +82,7 @@ class WordRepository
         $sourceId = $this->getId($word);
         $targetId = $this->topicRepository->getId($topic);
 
-        return $this->edge->link($sourceId, $targetId, 0, App::HAS_TOPIC);
+        return $this->edge->link($sourceId, $targetId, 0, Word::HAS_TOPIC);
     }
 
     public function linkSource($word, $url)
@@ -90,6 +90,6 @@ class WordRepository
         $sourceId = $this->getId($word);
         $targetId = $this->sourceRepository->getId($url);
 
-        return $this->edge->link($sourceId, $targetId, 0, App::HAS_SOURCE);
+        return $this->edge->link($sourceId, $targetId, 0, Word::HAS_SOURCE);
     }
 }

@@ -6,11 +6,11 @@ return call_user_func(function () {
     return [
         '@type -> @ -> .webtop-g span.pos',
         '@pronounces -> .top-container > .top-g -> :first -> .pron-gs -> :each -> .pron-g > div.sound -> @ -> :attr -> data-src-mp3',
-        '@means -> #entryContent > div > .h-g > .top-container -> :next-sibling -> :each -> .sn-gs' => [
-            '@title -> .shcut',
-            '@grammar -> .sn-g .gram-g .gram',
-            '@definition -> .sn-g .def',
-            '@examples -> .sn-g .x-gs -> :each -> .x-g -> @ -> .x',
+        '@means -> #entryContent > div > .h-g > .top-container -> :next-sibling -> :each -> .sn-g' => [
+            '@title -> :parent -> .shcut',
+            '@grammar -> .gram-g .gram',
+            '@definition -> .def',
+            '@examples -> .x-gs -> :each -> .x-g -> @ -> .x',
         ],
         '@idioms -> #entryContent .idm-gs -> :each -> .idm-g'        => [
             '@title -> .idm',
@@ -23,7 +23,7 @@ return call_user_func(function () {
             $url = explode('/', $node->attr('href'));
             $word = array_pop($url);
             $word = explode('#', $word)[0];
-            $word = explode('_', $word)[0];
+            # $word = explode('_', $word)[0];
 
             return $word;
         },

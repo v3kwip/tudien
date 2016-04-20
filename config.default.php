@@ -10,6 +10,7 @@ use andytruong\dict\domain\Parser;
 use andytruong\dict\domain\source\SourceRepository;
 use andytruong\dict\domain\topic\TopicFetchCommand;
 use andytruong\dict\domain\topic\TopicRepository;
+use andytruong\dict\domain\user\User;
 use andytruong\dict\domain\word\WordFetch;
 use andytruong\dict\domain\word\WordRepository;
 use andytruong\dict\domain\word\WordWarmCommand;
@@ -59,7 +60,7 @@ return call_user_func(function () {
         # Basic services
         # ---------------------
         'queue'  => function (App $c) { return new Queue($c['dbs']['default'], 'dict_queue', 'dict'); },
-        'edge'   => function (App $c) { return new Edge($c['dbs']['default'], 'dict_edge'); },
+        'edge'   => function (App $c) { return new Edge($c['dbs']['default'], 'dict_edge', null, $c['dispatcher']); },
         'worker' => function (App $c) { return new Worker($c, $c['queue'], $c['callback_resolver'], $c['logger']); },
 
         # Domain
@@ -86,8 +87,8 @@ return call_user_func(function () {
                 $weight = $link['weight'];
 
                 switch ($link['type']) {
-                    case App::EDGE_VISIT_TOPIC:
-                    case App::EDGE_VISIT_WORD:
+                    case User::VISIT_TOPIC:
+                    case User::VISIT_WORD:
                         $event->setArgument('weight', 1 + $weight);
                         break;
                 }

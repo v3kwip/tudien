@@ -2,7 +2,6 @@
 
 namespace andytruong\dict\domain\topic;
 
-use andytruong\dict\App;
 use Doctrine\DBAL\Connection;
 use go1\edge\Edge;
 
@@ -47,7 +46,7 @@ class TopicRepository
         $sourceId = $this->getId($parent);
         $targetId = $this->getId($children);
 
-        return $this->edge->link($sourceId, $targetId, 0, App::HAS_CHILD_TOPIC);
+        return $this->edge->link($sourceId, $targetId, 0, Topic::HAS_CHILD);
     }
 
     /**
@@ -57,7 +56,7 @@ class TopicRepository
     public function getLeafTopicId($ids)
     {
         $ids = is_scalar($ids) ? [$ids] : $ids;
-        $subTopicIDs = $this->edge->getTargetIds($ids, App::HAS_CHILD_TOPIC);
+        $subTopicIDs = $this->edge->getTargetIds($ids, Topic::HAS_CHILD);
         if ($subTopicIDs) {
             $subIds = [];
             foreach ($subTopicIDs as $subTopicID) {
