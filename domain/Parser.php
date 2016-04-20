@@ -73,6 +73,9 @@ class Parser
                 case ':first':
                     return $this->parse($node->first(), $rule, $return);
 
+                case ':next-sibling':
+                    return $this->parse($node->siblings()->first(), $rule, $return);
+
                 case ':each':
                     return $this->each($node, $rule);
 
